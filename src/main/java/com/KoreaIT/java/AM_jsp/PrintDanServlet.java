@@ -41,8 +41,8 @@ public class PrintDanServlet extends HttpServlet {
 		
 		response.getWriter().append(String.format("<div style='color:%s;'>==%d단==</div>", color, dan));
 
-		for (int i = 0; i <= limit; i++) {
-			response.getWriter().append(String.format("<div style='color:%s;> %d * %d = %d </div>", color, dan, i, dan * i));
+		for (int i = 1; i <= limit; i++) {
+			response.getWriter().append(String.format("<div style='color:%s;'> %d * %d = %d </div>", color, dan, i, dan * i));
 			
 		}
 		
