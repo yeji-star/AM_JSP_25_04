@@ -43,7 +43,7 @@ public class articleListServlet extends HttpServlet {
 
 			DBUtil dbUtil = new DBUtil(request, response);
 
-			String sql = "SELECT * FROM article;";
+			String sql = "SELECT * FROM article ORDER BY id desc;";
 
 			List<Map<String, Object>> articleRows = dbUtil.selectRows(conn, sql); // DB에서 가져온 걸 압축풀기한 느낌
 			
