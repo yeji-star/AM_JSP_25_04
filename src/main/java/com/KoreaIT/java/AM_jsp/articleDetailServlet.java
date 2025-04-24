@@ -13,8 +13,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/article/list")
-public class articleListServlet extends HttpServlet {
+@WebServlet("/article/detail")
+public class articleDetailServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -42,19 +42,21 @@ public class articleListServlet extends HttpServlet {
 			response.getWriter().append("연결 성공!");
 
 			DBUtil dbUtil = new DBUtil(request, response);
-
-			String sql = "SELECT * FROM article ORDER BY id desc;";
-
-			List<Map<String, Object>> articleRows = dbUtil.selectRows(conn, sql); // DB에서 가져온 걸 압축풀기한 느낌
-
 			
-			
+			int id = Integer.parseInt(request.getParameter("id"));
 
-			request.setAttribute("articleRows", articleRows); // 속성에 대해서 하나를 설명
+//			String sql = "SELECT * FROM article ORDER BY id desc;";
+			
+			String sql = String.format("SELECT * FROM article WHERE id = %d;", id);
+
+			Map<String, Object> articleRow = dbUtil.selectRow(conn, sql); // DB에서 가져온 걸 압축풀기한 느낌
+				
+
+			request.setAttribute("articleRow", articleRow); // 속성에 대해서 하나를 설명
 
 //			response.getWriter().append(articleRows.toString()); // 출력하는 놈(데이터);
 
-			request.getRequestDispatcher("/jsp/article/list.jsp").forward(request, response); // 연동
+			request.getRequestDispatcher("/jsp/article/detail.jsp").forward(request, response); // 연동
 
 		} catch (SQLException e) {
 			System.out.println("에러 1 : " + e);
