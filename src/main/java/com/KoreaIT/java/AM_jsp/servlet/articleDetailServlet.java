@@ -1,4 +1,4 @@
-package com.KoreaIT.java.AM_jsp;
+package com.KoreaIT.java.AM_jsp.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -6,6 +6,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+
+import com.KoreaIT.java.AM_jsp.util.DBUtil;
+import com.KoreaIT.java.AM_jsp.util.SecSql;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -41,15 +44,19 @@ public class articleDetailServlet extends HttpServlet {
 			conn = DriverManager.getConnection(url, user, password);
 			response.getWriter().append("연결 성공!");
 
-			DBUtil dbUtil = new DBUtil(request, response);
+			
 			
 			int id = Integer.parseInt(request.getParameter("id"));
 
 //			String sql = "SELECT * FROM article ORDER BY id desc;";
 			
-			String sql = String.format("SELECT * FROM article WHERE id = %d;", id);
+//			String sql = String.format("SELECT * FROM article WHERE id = %d;", id);
 
-			Map<String, Object> articleRow = dbUtil.selectRow(conn, sql); // DB에서 가져온 걸 압축풀기한 느낌
+			SecSql sql = SecSql.from("SELECT *");
+			sql.append("FROM article");
+			sql.append("WHERE id = ?;", id);
+			
+			Map<String, Object> articleRow = DBUtil.selectRow(conn, sql); // DB에서 가져온 걸 압축풀기한 느낌
 				
 
 			request.setAttribute("articleRow", articleRow); // 속성에 대해서 하나를 설명
