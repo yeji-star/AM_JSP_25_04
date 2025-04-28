@@ -34,7 +34,7 @@ public class articleListServlet extends HttpServlet {
 
 		
 
-		String url = "jdbc:mysql://127.0.0.1:3306/AM_JSP_25_03?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul";
+		String url = "jdbc:mysql://127.0.0.1:3306/AM_JSP_25_04?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul";
 		String user = "root";
 		String password = "";
 
@@ -43,17 +43,37 @@ public class articleListServlet extends HttpServlet {
 		try {
 			conn = DriverManager.getConnection(url, user, password);
 			response.getWriter().append("연결 성공!");
+			
+			int page = 1;
+			
+			if(request.getParameter("page") != null && request.getParameter("page").length() != 0)  {
+				page = Integer.parseInt(request.getParameter("page"));
+			}
+			
+			int itemsInAPage = 10;
+			int LimitFrom = (page - 1) * itemsInAPage;
+			
+			SecSql sql = SecSql.from("SELECT COUNT(*)");
+			sql.append("FROM article;");
+			
+			int totalCnt = DBUtil.selectRowIntValue(conn, sql); // 총 가지고 있는 게시글 수
+			int totalPage = (int) Math.ceil(totalCnt / (double)itemsInAPage); // 나누기
 
-			SecSql sql = SecSql.from("SELECT *");
+			
+			sql = SecSql.from("SELECT *");
 			sql.append("FROM article");
-			sql.append("ORDER BY id DESC;");
+			sql.append("ORDER BY id DESC");
+			sql.append("LIMIT ?, ?;", LimitFrom, itemsInAPage);
 
 //			String sql = "SELECT * FROM article ORDER BY id desc;";
 
 			List<Map<String, Object>> articleRows = DBUtil.selectRows(conn, sql); // DB에서 가져온 걸 압축풀기한 느낌
 						
 
+			request.setAttribute("page", page);
 			request.setAttribute("articleRows", articleRows); // 속성에 대해서 하나를 설명
+			request.setAttribute("totalCnt", totalCnt);
+			request.setAttribute("totalPage", totalPage);
 
 //			response.getWriter().append(articleRows.toString()); // 출력하는 놈(데이터);
 

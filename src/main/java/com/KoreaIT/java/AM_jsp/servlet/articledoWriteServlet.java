@@ -16,8 +16,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/article/detail")
-public class articleDetailServlet extends HttpServlet {
+@WebServlet("/article/doWrite")
+public class articledoWriteServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -42,28 +42,24 @@ public class articleDetailServlet extends HttpServlet {
 
 		try {
 			conn = DriverManager.getConnection(url, user, password);
-			response.getWriter().append("연결 성공!");
-
 			
-			
-			int id = Integer.parseInt(request.getParameter("id"));
+String title = request.getParameter("title");
+String body = request.getParameter("body");
 
 //			String sql = "SELECT * FROM article ORDER BY id desc;";
 			
 //			String sql = String.format("SELECT * FROM article WHERE id = %d;", id);
 
-			SecSql sql = SecSql.from("SELECT *");
-			sql.append("FROM article");
-			sql.append("WHERE id = ?;", id);
+			SecSql sql = SecSql.from("INSERT INTO article");
+			sql.append("SET ragDate = NOW(),");
+			sql.append("title = ?,", title);
+			sql.append("`body` = ?,", body);
 			
-			Map<String, Object> articleRow = DBUtil.selectRow(conn, sql); // DB에서 가져온 걸 압축풀기한 느낌
+			int id = DBUtil.insert(conn, sql);
 				
 
-			request.setAttribute("articleRow", articleRow); // 속성에 대해서 하나를 설명
-
-//			response.getWriter().append(articleRows.toString()); // 출력하는 놈(데이터);
-
-			request.getRequestDispatcher("/jsp/article/detail.jsp").forward(request, response); // 연동
+			response.getWriter()
+			.append(String.format("<script>alert('%d번 글이 작성됨'); location.replace('list');</script>", id));
 
 		} catch (SQLException e) {
 			System.out.println("에러 1 : " + e);

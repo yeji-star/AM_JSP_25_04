@@ -7,6 +7,10 @@
 <%
 List<Map<String, Object>> articleRows = (List<Map<String, Object>>) request.getAttribute("articleRows");
 // 뒤에 있는 게 List 형식이 아니면 어떡하냐고 물어보니까 앞에 List 형변환을 함
+
+int cPage = (int) request.getAttribute("page");
+int totalCnt = (int) request.getAttribute("totalCnt");
+int totalPage = (int) request.getAttribute("totalPage");
 %>
 
 
@@ -25,7 +29,13 @@ table>thead>tr>th, table>tbody>tr>td {
 
 	<h2>게시글 목록</h2>
 
+
 	<a href="../home/main">메인으로 이동</a>
+
+	<div>
+		총 게시글 갯수 :
+		<%=totalCnt%>
+	</div>
 
 	<table border="1px">
 
@@ -49,8 +59,8 @@ table>thead>tr>th, table>tbody>tr>td {
 				<td><a href="detail?id=<%=articleRow.get("id")%>"><%=articleRow.get("title")%></a></td>
 				<td><%=articleRow.get("body")%></td>
 				<td><a
-					onclick="if ( confirm('정말 삭제하시겠습니까?') == false ) { return false; }"
-					href="doDelete?id=<%=articleRow.get("id")%>">del</a></td>
+						onclick="if ( confirm('정말 삭제하시겠습니까?') == false ) { return false; }"
+						href="doDelete?id=<%=articleRow.get("id")%>">del</a></td>
 			</tr>
 			<%
 			}
@@ -59,7 +69,35 @@ table>thead>tr>th, table>tbody>tr>td {
 
 	</table>
 
+	<style type="text/css">
+.page {
+	font-size: 1.4rem;
+}
 
+.page>a {
+	color: black;
+	text-decoration: none;
+}
+
+.page>a.cPage {
+	color: red;
+	text-decoration: underline;
+}
+</style>
+
+	<div class="page">
+
+		<%
+		for (int i = 1; i <= totalPage; i++) {
+		%>
+		<a class="<%=cPage == i ? "cPage" : ""%>" href="list?page=<%=i%>"><%=i%></a>
+		<%
+		}
+		%>
+		
+	 
+
+	</div>
 
 
 </body>

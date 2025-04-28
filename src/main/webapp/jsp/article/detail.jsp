@@ -39,14 +39,6 @@ Map<String, Object> articleRow = (Map<String, Object>) request.getAttribute("art
 		<%=articleRow.get("body")%>
 	</div>
 	
-	<div>
-	<button class="btn1">삭제</button>
-	<script>
-	$('.btn1').click(funtion() {
-		
-	})
-	</script>
-	</div>
 
 	<div>
 		<a style="color: green;" href="list">리스트로 돌아가기</a>
