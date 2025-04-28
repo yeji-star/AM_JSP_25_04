@@ -40,19 +40,28 @@ public class memberdoJoinServlet extends HttpServlet {
 
 		try {
 			conn = DriverManager.getConnection(url, user, password);
-
-			
+		
 			
 			String loginId = request.getParameter("loginId");
 			String loginPw = request.getParameter("loginPw");
-			String checkPw = request.getParameter("checkPw");
+			String loginPwConfirm = request.getParameter("loginPwConfirm");
 			String name = request.getParameter("name");
 
-//			String sql = "SELECT * FROM article ORDER BY id desc;";
+			// 아이디 중복 체크
+			
+			SecSql sql = SecSql.from("SELECT COUNT(*) AS cnt FROM `member`");			
+			sql.append("WHERE loginId = ?;", loginId);
+			
+			boolean isJoinableId = DBUtil.selectRowIntValue(conn, sql) == 0;
+			
+			if(isJoinableId == false) {
+				// 이게 거짓이면 누가 사용중이라는 것이라 리턴으로 돌려보냄
+				response.getWriter()
+				.append(String.format("<script>alert('이미 사용중인 아이디 입니다.'); location.replace('../member/join');</script>", loginId));
+				return;
+			}
 
-//			String sql = String.format("SELECT * FROM article WHERE id = %d;", id);
-
-			SecSql sql = SecSql.from("INSERT INTO `member`");
+			sql = SecSql.from("INSERT INTO `member`");
 			sql.append("SET regDate = NOW(),");
 			sql.append("loginId = ?,", loginId);
 			sql.append("loginPw = ?,", loginPw);
@@ -60,9 +69,8 @@ public class memberdoJoinServlet extends HttpServlet {
 
 			int id = DBUtil.insert(conn, sql);
 			
-
 			response.getWriter()
-					.append(String.format("<script>alert('%d번째로 가입되었습니다!'); location.replace('../article/list');</script>", id));
+					.append(String.format("<script>alert('%d번째로 가입하였습니다!'); location.replace('../article/list');</script>", id));
 
 		} catch (SQLException e) {
 			System.out.println("에러 1 : " + e);
