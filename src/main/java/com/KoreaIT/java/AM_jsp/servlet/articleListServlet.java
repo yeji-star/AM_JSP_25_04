@@ -42,7 +42,7 @@ public class articleListServlet extends HttpServlet {
 
 		try {
 			conn = DriverManager.getConnection(url, user, password);
-			response.getWriter().append("연결 성공!");
+			
 			
 			int page = 1;
 			
