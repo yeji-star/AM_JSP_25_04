@@ -16,8 +16,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/article/list")
-public class articleListServlet extends HttpServlet {
+@WebServlet("/member/logout")
+public class memberLogoutServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -32,8 +32,6 @@ public class articleListServlet extends HttpServlet {
 
 		}
 
-		
-
 		String url = "jdbc:mysql://127.0.0.1:3306/AM_JSP_25_04?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul";
 		String user = "root";
 		String password = "";
@@ -42,45 +40,16 @@ public class articleListServlet extends HttpServlet {
 
 		try {
 			conn = DriverManager.getConnection(url, user, password);
+		
 			
+			String loginId = request.getParameter("loginId");
 			
-			int page = 1;
-			
-			if(request.getParameter("page") != null && request.getParameter("page").length() != 0)  {
-				page = Integer.parseInt(request.getParameter("page"));
-			}
-			
-			int itemsInAPage = 10;
-			int LimitFrom = (page - 1) * itemsInAPage;
-			
-			SecSql sql = SecSql.from("SELECT COUNT(*)");
-			sql.append("FROM article;");
-			
-			int totalCnt = DBUtil.selectRowIntValue(conn, sql); // 총 가지고 있는 게시글 수
-			int totalPage = (int) Math.ceil(totalCnt / (double)itemsInAPage); // 나누기
-			
+			loginId = null;
 			
 
 			
-			sql = SecSql.from("SELECT *");
-			sql.append("FROM article");
-			sql.append("ORDER BY id DESC");
-			sql.append("LIMIT ?, ?;", LimitFrom, itemsInAPage);
-
-//			String sql = "SELECT * FROM article ORDER BY id desc;";
-
-			List<Map<String, Object>> articleRows = DBUtil.selectRows(conn, sql); // DB에서 가져온 걸 압축풀기한 느낌
-						
-
-			request.setAttribute("page", page);
-			request.setAttribute("articleRows", articleRows); // 속성에 대해서 하나를 설명
-			request.setAttribute("totalCnt", totalCnt);
-			request.setAttribute("totalPage", totalPage);
-			
-
-//			response.getWriter().append(articleRows.toString()); // 출력하는 놈(데이터);
-
-			request.getRequestDispatcher("/jsp/article/list.jsp").forward(request, response); // 연동
+			response.getWriter()
+					.append(String.format("<script>alert('로그아웃 되었습니다.'); location.replace('../article/list');</script>"));
 
 		} catch (SQLException e) {
 			System.out.println("에러 1 : " + e);
