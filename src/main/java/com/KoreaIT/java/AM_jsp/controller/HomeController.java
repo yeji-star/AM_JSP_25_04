@@ -1,23 +1,30 @@
-package com.KoreaIT.java.AM_jsp.servlet;
+package com.KoreaIT.java.AM_jsp.controller;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.util.Map;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import java.io.IOException;
-import java.util.Map;
+public class HomeController {
 
-@WebServlet("/home/main")
-public class homeMainServlet extends HttpServlet {
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-
-		HttpSession session = request.getSession();
-
+	private HttpServletRequest request;
+	private HttpServletResponse response;
+	private Connection conn;
+	private HttpSession session;
+	
+	public HomeController(HttpServletRequest request, HttpServletResponse response, Connection conn,
+			HttpSession session) {
+		this.conn = conn;
+		this.request = request;
+		this.response = response;
+		this.session = session;
+	}
+	
+	public void main() throws ServletException, IOException {
 		boolean isLogined = false;
 		int loginedMemberId = -1;
 		Map<String, Object> loginedMember = null;
@@ -32,6 +39,7 @@ public class homeMainServlet extends HttpServlet {
 		request.setAttribute("loginedMemberId", loginedMemberId);
 
 		request.getRequestDispatcher("/jsp/home/main.jsp").forward(request, response);
+		
 	}
 
 }

@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.KoreaIT.java.AM_jsp.controller.ArticleController;
+import com.KoreaIT.java.AM_jsp.controller.HomeController;
+import com.KoreaIT.java.AM_jsp.controller.MemberController;
 import com.KoreaIT.java.AM_jsp.util.DBUtil;
 import com.KoreaIT.java.AM_jsp.util.SecSql;
 
@@ -80,13 +82,43 @@ public class DispatcherServlet extends HttpServlet {
 			
 			// 어떤 컨트롤러에게 일시킬까 //
 			
+			if(controllerName.equals("home")) {
+				HomeController homeController = new HomeController(request, response, conn, session);
+				
+				if(actionMethodName.equals("main")) {
+					homeController.main();
+				}
+			}
+			
 			if(controllerName.equals("article")) {
-				ArticleController articleController = new ArticleController(request, response, conn);
+				ArticleController articleController = new ArticleController(request, response, conn, session);
 				
 				if(actionMethodName.equals("list")) {
 					articleController.showList();
 				}
+				if(actionMethodName.equals("detail")) {
+					articleController.showDetail();
+				}
+				if(actionMethodName.equals("write")) {
+					articleController.doWrite();
+				}
+				if(actionMethodName.equals("modify")) {
+					articleController.doModify();
+				}
 			}
+			
+			if(controllerName.equals("member")) {
+				MemberController memberController = new MemberController(request, response, conn, session);
+				
+				if(actionMethodName.equals("join")) {
+					memberController.doJoin();
+				}
+				if(actionMethodName.equals("login")) {
+					memberController.login();
+				}
+				
+			}
+			
 
 		} catch (SQLException e) {
 			System.out.println("에러 1 : " + e);
@@ -100,7 +132,6 @@ public class DispatcherServlet extends HttpServlet {
 			}
 		}
 
-		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
