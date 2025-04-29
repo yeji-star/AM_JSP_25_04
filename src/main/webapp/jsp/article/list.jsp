@@ -65,7 +65,7 @@ table>thead>tr>th, table>tbody>tr>td {
 		<%=totalCnt%>
 	</div>
 
-	<table border="1px">
+	<table border="1px" border-collapse="collapse">
 
 		<thead>
 			<tr>
