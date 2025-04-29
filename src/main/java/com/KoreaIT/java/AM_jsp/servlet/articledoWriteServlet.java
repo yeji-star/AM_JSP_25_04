@@ -15,6 +15,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/article/doWrite")
 public class articledoWriteServlet extends HttpServlet {
@@ -41,8 +42,11 @@ public class articledoWriteServlet extends HttpServlet {
 		try {
 			conn = DriverManager.getConnection(url, user, password);
 
+			HttpSession session = request.getSession();
+			
 			String title = request.getParameter("title");
 			String body = request.getParameter("body");
+			int loginedMemberId = (int) session.getAttribute("loginedMemberId");
 
 //			String sql = "SELECT * FROM article ORDER BY id desc;";
 
@@ -50,6 +54,7 @@ public class articledoWriteServlet extends HttpServlet {
 
 			SecSql sql = SecSql.from("INSERT INTO article");
 			sql.append("SET regDate = NOW(),");
+			sql.append("memberId = ?,", loginedMemberId);
 			sql.append("title = ?,", title);
 			sql.append("`body` = ?;", body);
 

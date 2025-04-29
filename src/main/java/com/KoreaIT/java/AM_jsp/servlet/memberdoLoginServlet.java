@@ -15,6 +15,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/member/dologin")
 public class memberdoLoginServlet extends HttpServlet {
@@ -40,30 +41,40 @@ public class memberdoLoginServlet extends HttpServlet {
 
 		try {
 			conn = DriverManager.getConnection(url, user, password);
-		
-			
+
 			String loginId = request.getParameter("loginId");
-			String loginPw = request.getParameter("loginPw");			
-			
+			String loginPw = request.getParameter("loginPw");
 
 			// 아이디가 있나 체크
-			
-			SecSql sql = SecSql.from("SELECT COUNT(*) > 0");
+
+			SecSql sql = SecSql.from("SELECT *");
 			sql.append("FROM `member`");
 			sql.append("WHERE loginId = ?;", loginId);
-			
-			boolean isNoneId = DBUtil.selectRowBooleanValue(conn, sql);
-			
-			if(isNoneId == false) {
+
+			Map<String, Object> memberRow = DBUtil.selectRow(conn, sql); // pw를 꺼내와야해서 row로 씀
+
+			System.out.println(memberRow);
+
+			if (memberRow.isEmpty()) {
 				// 이게 거짓이면 누가 사용중이라는 것이라 리턴으로 돌려보냄
-				response.getWriter()
-				.append(String.format("<script>alert('%s는 없는 아이디입니다.'); location.replace('../member/login');</script>", loginId));
+				response.getWriter().append(String.format(
+						"<script>alert('%s는 없는 아이디입니다.'); location.replace('../member/login');</script>", loginId));
 				return;
 			}
-			
-			sql = SecSql.from("SELECT COUNT(*) AS cnt FROM `member`");			
-			sql.append("WHERE loginId = ?;", loginId);
-			
+
+			if (memberRow.get("loginPw").equals(loginPw) == false) {
+				response.getWriter()
+						.append(String.format(
+								"<script>alert('비밀번호가 일치하지 않습니다.'); location.replace('../member/login');</script>",
+								memberRow.get("name")));
+				return;
+			}
+
+			HttpSession session = request.getSession();
+			session.setAttribute("loginedMember", memberRow); // 속성을 키밸류로 저장
+			session.setAttribute("loginedMemberId", memberRow.get("id")); // 왼쪽이 키, 오른쪽이 밸류
+			session.setAttribute("loginedMemberLoginId", memberRow.get("loginId"));
+
 			response.getWriter()
 					.append(String.format("<script>alert('로그인 성공!'); location.replace('../article/list');</script>"));
 

@@ -7,11 +7,13 @@
 <%
 List<Map<String, Object>> articleRows = (List<Map<String, Object>>) request.getAttribute("articleRows");
 // 뒤에 있는 게 List 형식이 아니면 어떡하냐고 물어보니까 앞에 List 형변환을 함
+boolean isLogined = (boolean) request.getAttribute("isLogined");
+int loginedMemberId = (int) request.getAttribute("loginedMemberId");
 
 int cPage = (int) request.getAttribute("page");
 int totalCnt = (int) request.getAttribute("totalCnt");
 int totalPage = (int) request.getAttribute("totalPage");
-String member = request.getParameter("member");
+
 %>
 
 
@@ -30,15 +32,32 @@ table>thead>tr>th, table>tbody>tr>td {
 
 	<h2>게시글 목록</h2>
 
+	
 
-	<a href="../home/main">메인으로 이동</a>
-	<a href="../member/logout">로그아웃</a>
-	<a href="write">글쓰기</a>
-
+<%
+	if (isLogined) {
+	%>
 	<div>
-		로그인 중인 유저 :
-		<%=member%>
+	<%=loginedMemberId%>번 회원 로그인중
+		<a href="../member/logout">로그아웃</a>
+		<a href="write">글쓰기</a>
 	</div>
+	<%
+	}
+	%>
+
+	<%
+	if (!isLogined) {
+	%>
+	<div>
+		<a href="../member/login">로그인</a>
+	</div>
+	<%
+	}
+	%>
+	
+	<a href="../home/main">메인으로 이동</a>
+	
 
 	<div>
 		총 게시글 갯수 :

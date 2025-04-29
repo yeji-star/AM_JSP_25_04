@@ -15,6 +15,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/member/logout")
 public class memberLogoutServlet extends HttpServlet {
@@ -42,14 +43,15 @@ public class memberLogoutServlet extends HttpServlet {
 			conn = DriverManager.getConnection(url, user, password);
 		
 			
-			String loginId = request.getParameter("loginId");
-			
-			loginId = null;
+			HttpSession session = request.getSession();
+			session.removeAttribute("loginedMember"); // 속성을 키밸류로 저장
+			session.removeAttribute("loginedMemberId"); // 왼쪽이 키, 오른쪽이 밸류
+			session.removeAttribute("loginedMemberLoginId");
 			
 
 			
 			response.getWriter()
-					.append(String.format("<script>alert('로그아웃 되었습니다.'); location.replace('../article/list');</script>"));
+					.append(String.format("<script>alert('로그아웃 되었습니다.'); location.replace('../home/main');</script>"));
 
 		} catch (SQLException e) {
 			System.out.println("에러 1 : " + e);

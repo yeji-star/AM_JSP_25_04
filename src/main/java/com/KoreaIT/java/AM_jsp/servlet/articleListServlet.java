@@ -15,6 +15,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/article/list")
 public class articleListServlet extends HttpServlet {
@@ -32,8 +33,6 @@ public class articleListServlet extends HttpServlet {
 
 		}
 
-		
-
 		String url = "jdbc:mysql://127.0.0.1:3306/AM_JSP_25_04?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul";
 		String user = "root";
 		String password = "";
@@ -42,26 +41,22 @@ public class articleListServlet extends HttpServlet {
 
 		try {
 			conn = DriverManager.getConnection(url, user, password);
-			
-			
+
 			int page = 1;
-			
-			if(request.getParameter("page") != null && request.getParameter("page").length() != 0)  {
+
+			if (request.getParameter("page") != null && request.getParameter("page").length() != 0) {
 				page = Integer.parseInt(request.getParameter("page"));
 			}
-			
+
 			int itemsInAPage = 10;
 			int LimitFrom = (page - 1) * itemsInAPage;
-			
+
 			SecSql sql = SecSql.from("SELECT COUNT(*)");
 			sql.append("FROM article;");
-			
-			int totalCnt = DBUtil.selectRowIntValue(conn, sql); // 총 가지고 있는 게시글 수
-			int totalPage = (int) Math.ceil(totalCnt / (double)itemsInAPage); // 나누기
-			
-			
 
-			
+			int totalCnt = DBUtil.selectRowIntValue(conn, sql); // 총 가지고 있는 게시글 수
+			int totalPage = (int) Math.ceil(totalCnt / (double) itemsInAPage); // 나누기
+
 			sql = SecSql.from("SELECT *");
 			sql.append("FROM article");
 			sql.append("ORDER BY id DESC");
@@ -70,13 +65,33 @@ public class articleListServlet extends HttpServlet {
 //			String sql = "SELECT * FROM article ORDER BY id desc;";
 
 			List<Map<String, Object>> articleRows = DBUtil.selectRows(conn, sql); // DB에서 가져온 걸 압축풀기한 느낌
-						
 
+			
+			
+			HttpSession session = request.getSession();
+
+			boolean isLogined = false;
+			int loginedMemberId = -1;
+			Map<String, Object> loginedMember = null;
+
+			if (session.getAttribute("loginedMemberId") != null) {
+				isLogined = true;
+				loginedMemberId = (int) session.getAttribute("loginedMemberId");
+				loginedMember = (Map<String, Object>) session.getAttribute("loginedMember");
+			}
+
+			request.setAttribute("isLogined", isLogined);
+			request.setAttribute("loginedMemberId", loginedMemberId);
+						
+			
 			request.setAttribute("page", page);
 			request.setAttribute("articleRows", articleRows); // 속성에 대해서 하나를 설명
 			request.setAttribute("totalCnt", totalCnt);
 			request.setAttribute("totalPage", totalPage);
+
 			
+
+			request.setAttribute("loginedMember", loginedMember);
 
 //			response.getWriter().append(articleRows.toString()); // 출력하는 놈(데이터);
 

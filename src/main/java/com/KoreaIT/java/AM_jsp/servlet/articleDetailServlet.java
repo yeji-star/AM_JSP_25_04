@@ -15,6 +15,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/article/detail")
 public class articleDetailServlet extends HttpServlet {
@@ -42,7 +43,6 @@ public class articleDetailServlet extends HttpServlet {
 
 		try {
 			conn = DriverManager.getConnection(url, user, password);
-			response.getWriter().append("연결 성공!");
 
 			
 			
@@ -63,7 +63,22 @@ public class articleDetailServlet extends HttpServlet {
 
 //			response.getWriter().append(articleRows.toString()); // 출력하는 놈(데이터);
 
+			
+			
+			sql = SecSql.from("SELECT * FROM article");
+			sql.append("INNER JOIN `member`");
+			sql.append("ON article.id = `member`.id");
+			sql.append("WHERE id = ?;", id);
+			
+			HttpSession session = request.getSession();
+			Map<String, Object> loginedMember = (Map<String, Object>) session.getAttribute("loginedMember");
+			
+			request.setAttribute("loginedMember", loginedMember);
+			
 			request.getRequestDispatcher("/jsp/article/detail.jsp").forward(request, response); // 연동
+			
+			
+			
 
 		} catch (SQLException e) {
 			System.out.println("에러 1 : " + e);
