@@ -17,27 +17,8 @@ int loginedMemberId = (int) request.getAttribute("loginedMemberId");
 </head>
 <body>
 	<h2>메인 페이지</h2>
-
-	<%
-	if (isLogined) {
-	%>
-	<div>
-	<%=loginedMemberId%>번 회원 로그인중
-		<a href="../member/doLogout">로그아웃</a>
-	</div>
-	<%
-	}
-	%>
-
-	<%
-	if (!isLogined) {
-	%>
-	<div>
-		<a href="../member/login">로그인</a>
-	</div>
-	<%
-	}
-	%>
+	
+	<%@ include file="../part/top_bar.jspf" %>
 	
 	<ul>
 		<li><a href="../article/list">리스트로 이동</a></li>
