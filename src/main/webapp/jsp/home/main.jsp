@@ -23,7 +23,7 @@ int loginedMemberId = (int) request.getAttribute("loginedMemberId");
 	%>
 	<div>
 	<%=loginedMemberId%>번 회원 로그인중
-		<a href="../member/logout">로그아웃</a>
+		<a href="../member/doLogout">로그아웃</a>
 	</div>
 	<%
 	}

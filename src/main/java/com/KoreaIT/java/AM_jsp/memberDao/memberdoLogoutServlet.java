@@ -1,4 +1,4 @@
-package com.KoreaIT.java.AM_jsp.servlet;
+package com.KoreaIT.java.AM_jsp.memberDao;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -17,8 +17,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@WebServlet("/article/detail")
-public class articleDetailServlet extends HttpServlet {
+@WebServlet("/member/doLogout")
+public class memberdoLogoutServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -33,8 +33,6 @@ public class articleDetailServlet extends HttpServlet {
 
 		}
 
-		
-
 		String url = "jdbc:mysql://127.0.0.1:3306/AM_JSP_25_04?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul";
 		String user = "root";
 		String password = "";
@@ -43,33 +41,17 @@ public class articleDetailServlet extends HttpServlet {
 
 		try {
 			conn = DriverManager.getConnection(url, user, password);
-
-			
-			
-			int id = Integer.parseInt(request.getParameter("id"));
-
-//			String sql = "SELECT * FROM article ORDER BY id desc;";
-			
-//			String sql = String.format("SELECT * FROM article WHERE id = %d;", id);
-
-			SecSql sql = SecSql.from("SELECT article.*, `member`.name");
-			sql.append("FROM article");
-			sql.append("INNER JOIN `member`");
-			sql.append("ON article.memberId = `member`.id");
-			sql.append("WHERE article.id = ?;", id);
-			
-			Map<String, Object> articleRow = DBUtil.selectRow(conn, sql); // DB에서 가져온 걸 압축풀기한 느낌
-				
-
-			request.setAttribute("articleRow", articleRow); // 속성에 대해서 하나를 설명
-
-//			response.getWriter().append(articleRows.toString()); // 출력하는 놈(데이터);
 		
 			
-			request.getRequestDispatcher("/jsp/article/detail.jsp").forward(request, response); // 연동
+			HttpSession session = request.getSession();
+			session.removeAttribute("loginedMember"); // 속성을 키밸류로 저장
+			session.removeAttribute("loginedMemberId"); // 왼쪽이 키, 오른쪽이 밸류
+			session.removeAttribute("loginedMemberLoginId");
 			
+
 			
-			
+			response.getWriter()
+					.append(String.format("<script>alert('로그아웃 되었습니다.'); location.replace('../home/main');</script>"));
 
 		} catch (SQLException e) {
 			System.out.println("에러 1 : " + e);

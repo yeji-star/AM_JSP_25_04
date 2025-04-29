@@ -1,4 +1,4 @@
-package com.KoreaIT.java.AM_jsp.servlet;
+package com.KoreaIT.java.AM_jsp.articleDao;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -17,8 +17,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@WebServlet("/member/logout")
-public class memberLogoutServlet extends HttpServlet {
+@WebServlet("/article/doWrite")
+public class articledoWriteServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -41,17 +41,27 @@ public class memberLogoutServlet extends HttpServlet {
 
 		try {
 			conn = DriverManager.getConnection(url, user, password);
-		
-			
-			HttpSession session = request.getSession();
-			session.removeAttribute("loginedMember"); // 속성을 키밸류로 저장
-			session.removeAttribute("loginedMemberId"); // 왼쪽이 키, 오른쪽이 밸류
-			session.removeAttribute("loginedMemberLoginId");
-			
 
+			HttpSession session = request.getSession();
 			
+			String title = request.getParameter("title");
+			String body = request.getParameter("body");
+			int loginedMemberId = (int) session.getAttribute("loginedMemberId");
+
+//			String sql = "SELECT * FROM article ORDER BY id desc;";
+
+//			String sql = String.format("SELECT * FROM article WHERE id = %d;", id);
+
+			SecSql sql = SecSql.from("INSERT INTO article");
+			sql.append("SET regDate = NOW(),");
+			sql.append("memberId = ?,", loginedMemberId);
+			sql.append("title = ?,", title);
+			sql.append("`body` = ?;", body);
+
+			int id = DBUtil.insert(conn, sql);
+
 			response.getWriter()
-					.append(String.format("<script>alert('로그아웃 되었습니다.'); location.replace('../home/main');</script>"));
+					.append(String.format("<script>alert('%d번 글이 작성됨'); location.replace('list');</script>", id));
 
 		} catch (SQLException e) {
 			System.out.println("에러 1 : " + e);
@@ -65,6 +75,12 @@ public class memberLogoutServlet extends HttpServlet {
 			}
 		}
 
+	}
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		doGet(request, response);
 	}
 
 }

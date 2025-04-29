@@ -1,5 +1,10 @@
-package com.KoreaIT.java.AM_jsp.servlet;
+package com.KoreaIT.java.AM_jsp.articleDto;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,21 +15,14 @@ import java.util.Map;
 import com.KoreaIT.java.AM_jsp.util.DBUtil;
 import com.KoreaIT.java.AM_jsp.util.SecSql;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
-@WebServlet("/article/doWrite")
-public class articledoWriteServlet extends HttpServlet {
+@WebServlet("/article/modify")
+public class articleModifyServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+
 		response.setContentType("text/html;charset=UTF-8");
 
-		// DB 연결
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
@@ -42,26 +40,27 @@ public class articledoWriteServlet extends HttpServlet {
 		try {
 			conn = DriverManager.getConnection(url, user, password);
 
-			HttpSession session = request.getSession();
-			
-			String title = request.getParameter("title");
-			String body = request.getParameter("body");
-			int loginedMemberId = (int) session.getAttribute("loginedMemberId");
+			int id = Integer.parseInt(request.getParameter("id"));
 
 //			String sql = "SELECT * FROM article ORDER BY id desc;";
 
 //			String sql = String.format("SELECT * FROM article WHERE id = %d;", id);
 
-			SecSql sql = SecSql.from("INSERT INTO article");
-			sql.append("SET regDate = NOW(),");
-			sql.append("memberId = ?,", loginedMemberId);
-			sql.append("title = ?,", title);
-			sql.append("`body` = ?;", body);
+			SecSql sql = SecSql.from("SELECT *");
+			sql.append("FROM article");
+			sql.append("WHERE id = ?;", id);
 
-			int id = DBUtil.insert(conn, sql);
+			Map<String, Object> articleRow = DBUtil.selectRow(conn, sql); // DB에서 가져온 걸 압축풀기한 느낌
 
-			response.getWriter()
-					.append(String.format("<script>alert('%d번 글이 작성됨'); location.replace('list');</script>", id));
+			request.setAttribute("articleRow", articleRow); // 속성에 대해서 하나를 설명
+
+//			response.getWriter().append(articleRows.toString()); // 출력하는 놈(데이터);
+
+			if (articleRow == null) {
+				// todo
+			}
+
+			request.getRequestDispatcher("/jsp/article/modify.jsp").forward(request, response); // 연동
 
 		} catch (SQLException e) {
 			System.out.println("에러 1 : " + e);
@@ -74,9 +73,8 @@ public class articledoWriteServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 		}
-
 	}
-
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 

@@ -40,7 +40,7 @@ table>thead>tr>th, table>tbody>tr>td {
 	<div>
 		<%=loginedMemberId%>
 		회원님 로그인중
-		<a href="../member/logout">로그아웃</a>
+		<a href="../member/doLogout">로그아웃</a>
 		<a href="write">글쓰기</a>
 	</div>
 	<%

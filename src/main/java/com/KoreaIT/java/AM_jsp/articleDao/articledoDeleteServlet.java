@@ -1,4 +1,4 @@
-package com.KoreaIT.java.AM_jsp.servlet;
+package com.KoreaIT.java.AM_jsp.articleDao;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -17,13 +17,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-@WebServlet("/member/doJoin")
-public class memberdoJoinServlet extends HttpServlet {
+@WebServlet("/article/doDelete")
+public class articledoDeleteServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		response.setContentType("text/html;charset=UTF-8");
 
+		HttpSession session = request.getSession();
+		
+		if (session.getAttribute("loginedMemberId") == null) {
+			response.getWriter().append(
+					String.format("<script>alert('로그인이 되어 있지 않습니다.'); location.replace('../member/login');</script>"));
+			return;
+		}
+		
 		// DB 연결
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -41,38 +49,31 @@ public class memberdoJoinServlet extends HttpServlet {
 
 		try {
 			conn = DriverManager.getConnection(url, user, password);
-		
-			
-			String loginId = request.getParameter("loginId");
-			String loginPw = request.getParameter("loginPw");
-			String loginPwConfirm = request.getParameter("loginPwConfirm");
-			String name = request.getParameter("name");
+			response.getWriter().append("연결 성공!");
 
-			// 아이디 중복 체크
+			int id = Integer.parseInt(request.getParameter("id"));
 			
-			SecSql sql = SecSql.from("SELECT COUNT(*) AS cnt FROM `member`");			
-			sql.append("WHERE loginId = ?;", loginId);
+			SecSql sql = SecSql.from("SELECT *");
+			sql.append("FROM article");
+			sql.append("WHERE id = ?;", id);
 			
-			boolean isJoinableId = DBUtil.selectRowIntValue(conn, sql) == 0;
+			Map<String, Object> articleRow = DBUtil.selectRow(conn, sql);
 			
-			if(isJoinableId == false) {
-				// 이게 거짓이면 누가 사용중이라는 것이라 리턴으로 돌려보냄
+			int loginedMemberId = (int) session.getAttribute("loginedMemberId");
+			
+			if(loginedMemberId != (int) articleRow.get("memberId")) {
 				response.getWriter()
-				.append(String.format("<script>alert('이미 사용중인 아이디 입니다.'); location.replace('../member/join');</script>", loginId));
-				return;
+				.append(String.format("<script>alert('%d번 글에 대한 권한이 없습니다.'); location.replace('list');</script>", id));
+			return;	
 			}
 
-			sql = SecSql.from("INSERT INTO `member`");
-			sql.append("SET regDate = NOW(),");
-			sql.append("loginId = ?,", loginId);
-			sql.append("loginPw = ?,", loginPw);
-			sql.append("`name` = ?;", name);
+			sql = SecSql.from("DELETE FROM article");
+			sql.append("WHERE id = ?;", id);
 
-			int id = DBUtil.insert(conn, sql);
-		
-			
+			DBUtil.delete(conn, sql); // DB에서 가져온 걸 압축풀기한 느낌
+
 			response.getWriter()
-					.append(String.format("<script>alert('%d번째로 가입하였습니다!'); location.replace('../article/list');</script>", id));
+					.append(String.format("<script>alert('%d번 글이 삭제됨'); location.replace('list');</script>", id));
 
 		} catch (SQLException e) {
 			System.out.println("에러 1 : " + e);
@@ -86,12 +87,6 @@ public class memberdoJoinServlet extends HttpServlet {
 			}
 		}
 
-	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-
-		doGet(request, response);
 	}
 
 }
