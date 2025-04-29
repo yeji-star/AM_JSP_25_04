@@ -69,9 +69,7 @@ public class memberdoJoinServlet extends HttpServlet {
 			sql.append("`name` = ?;", name);
 
 			int id = DBUtil.insert(conn, sql);
-			
-			HttpSession session = request.getSession();
-			session.setAttribute("name", name);
+		
 			
 			response.getWriter()
 					.append(String.format("<script>alert('%d번째로 가입하였습니다!'); location.replace('../article/list');</script>", id));

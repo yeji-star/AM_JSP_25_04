@@ -32,7 +32,7 @@ Map<String, Object> articleRow = (Map<String, Object>) request.getAttribute("art
 	</div>
 	<div>
 		작성자 :
-		<%=articleRow.get("memberId")%>
+		<%=articleRow.get("name")%>
 	</div>
 	<div>
 		제목 :

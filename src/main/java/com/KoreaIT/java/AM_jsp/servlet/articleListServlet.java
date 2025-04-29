@@ -57,9 +57,11 @@ public class articleListServlet extends HttpServlet {
 			int totalCnt = DBUtil.selectRowIntValue(conn, sql); // 총 가지고 있는 게시글 수
 			int totalPage = (int) Math.ceil(totalCnt / (double) itemsInAPage); // 나누기
 
-			sql = SecSql.from("SELECT *");
+			sql = SecSql.from("SELECT article.*, `member`.name");
 			sql.append("FROM article");
-			sql.append("ORDER BY id DESC");
+			sql.append("INNER JOIN `member`");
+			sql.append("ON article.memberId = `member`.id");
+			sql.append("ORDER BY article.id DESC");
 			sql.append("LIMIT ?, ?;", LimitFrom, itemsInAPage);
 
 //			String sql = "SELECT * FROM article ORDER BY id desc;";

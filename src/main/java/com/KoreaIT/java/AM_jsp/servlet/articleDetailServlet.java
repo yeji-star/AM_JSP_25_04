@@ -52,9 +52,11 @@ public class articleDetailServlet extends HttpServlet {
 			
 //			String sql = String.format("SELECT * FROM article WHERE id = %d;", id);
 
-			SecSql sql = SecSql.from("SELECT *");
+			SecSql sql = SecSql.from("SELECT article.*, `member`.name");
 			sql.append("FROM article");
-			sql.append("WHERE id = ?;", id);
+			sql.append("INNER JOIN `member`");
+			sql.append("ON article.memberId = `member`.id");
+			sql.append("WHERE article.id = ?;", id);
 			
 			Map<String, Object> articleRow = DBUtil.selectRow(conn, sql); // DB에서 가져온 걸 압축풀기한 느낌
 				
@@ -62,18 +64,7 @@ public class articleDetailServlet extends HttpServlet {
 			request.setAttribute("articleRow", articleRow); // 속성에 대해서 하나를 설명
 
 //			response.getWriter().append(articleRows.toString()); // 출력하는 놈(데이터);
-
-			
-			
-			sql = SecSql.from("SELECT * FROM article");
-			sql.append("INNER JOIN `member`");
-			sql.append("ON article.id = `member`.id");
-			sql.append("WHERE id = ?;", id);
-			
-			HttpSession session = request.getSession();
-			Map<String, Object> loginedMember = (Map<String, Object>) session.getAttribute("loginedMember");
-			
-			request.setAttribute("loginedMember", loginedMember);
+		
 			
 			request.getRequestDispatcher("/jsp/article/detail.jsp").forward(request, response); // 연동
 			
