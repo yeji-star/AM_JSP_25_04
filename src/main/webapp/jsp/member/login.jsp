@@ -42,7 +42,7 @@
 		}
 	</script>
 
-	<form onsubmit="loginForm__submit(this); return false;" action="dologin" method="post">
+	<form onsubmit="loginForm__submit(this); return false;" action="doLogin" method="post">
 		<div>
 			아이디 : <input autocomplete="off" type="text" placeholder="아이디 입력"
 				name="loginId" />

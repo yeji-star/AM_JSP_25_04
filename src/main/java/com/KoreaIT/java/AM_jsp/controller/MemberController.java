@@ -2,6 +2,7 @@ package com.KoreaIT.java.AM_jsp.controller;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.List;
 import java.util.Map;
 
 import com.KoreaIT.java.AM_jsp.dto.Member;
@@ -30,7 +31,7 @@ public class MemberController {
 		this.response = response;
 		this.session = session;
 
-		this.memberService = new MemberService();
+		this.memberService = new MemberService(conn);
 	}
 
 	public void showJoin() throws ServletException, IOException {
@@ -77,13 +78,15 @@ public class MemberController {
 		// 아이디가 있나 체크
 
 		Member member = memberService.getMemberByLoginId(loginId);
-
-//		if (member.isEmpty()) {
-//			// 이게 거짓이면 누가 사용중이라는 것이라 리턴으로 돌려보냄
-//			response.getWriter().append(String
-//					.format("<script>alert('%s는 없는 아이디입니다.'); location.replace('../member/login');</script>", loginId));
-//			return;
-//		}
+		
+		boolean isLoginIdDup = memberService.isLoginIdDup(loginId);
+		
+		if (isLoginIdDup == false) {
+			// 이게 거짓이면 누가 사용중이라는 것이라 리턴으로 돌려보냄
+			response.getWriter().append(String
+					.format("<script>alert('%s는 없는 아이디입니다.'); location.replace('../member/login');</script>", loginId));
+			return;
+		}
 
 		if (member.getLoginPw().equals(loginPw) == false) {
 			response.getWriter()
@@ -94,8 +97,8 @@ public class MemberController {
 		}
 
 		session.setAttribute("loginedMember", member); // 속성을 키밸류로 저장
-//		session.setAttribute("loginedMemberId", member.get("id")); // 왼쪽이 키, 오른쪽이 밸류
-//		session.setAttribute("loginedMemberLoginId", member.get("loginId"));
+		session.setAttribute("loginedMemberId", member.getId()); // 왼쪽이 키, 오른쪽이 밸류
+		session.setAttribute("loginedMemberLoginId", member.getLoginId());
 
 		response.getWriter()
 				.append(String.format("<script>alert('로그인 성공!'); location.replace('../article/list');</script>"));
