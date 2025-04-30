@@ -1,11 +1,12 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
+<%@page import="com.KoreaIT.java.AM_jsp.dto.Article"%>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 
 <%
-Map<String, Object> articleRow = (Map<String, Object>) request.getAttribute("articleRow");
+Article article = (Article) request.getAttribute("article");
 // 뒤에 있는 게 List 형식이 아니면 어떡하냐고 물어보니까 앞에 List 형변환을 함
 %>
 
@@ -15,25 +16,25 @@ Map<String, Object> articleRow = (Map<String, Object>) request.getAttribute("art
 <html>
 <head>
 <meta charset="UTF-8">
-<title><%=articleRow.get("id") %>글 수정</title>
+<title><%=article.getId()%>글 수정</title>
 
 </head>
 <body>
 
-	<h2><%=articleRow.get("id") %>글 수정</h2>
+	<h2><%=article.getId() %>글 수정</h2>
 
 
 	<a href="../home/main">메인으로 이동</a>
 
 	<form action="doModify" method="post">
-	<input type="hidden" value="<%=articleRow.get("id") %>" name="id" />
+	<input type="hidden" value="<%=article.getId() %>" name="id" />
 	<div>
 		번호 :
-		<%=articleRow.get("id")%>
+		<%=article.getId()%>
 	</div>
 	<div>
 		날짜 :
-		<%=articleRow.get("regDate")%>
+		<%=article.getRegDate()%>
 	</div>
 		<div>
 			새 제목 : <input type="text" placeholder="제목 입력" name="title" />

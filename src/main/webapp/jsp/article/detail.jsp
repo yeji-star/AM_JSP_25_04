@@ -1,11 +1,12 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
+<%@page import="com.KoreaIT.java.AM_jsp.dto.Article"%>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 
 <%
-Map<String, Object> articleRow = (Map<String, Object>) request.getAttribute("articleRow");
+Article article = (Article) request.getAttribute("article");
 // 뒤에 있는 게 List 형식이 아니면 어떡하냐고 물어보니까 앞에 List 형변환을 함
 %>
 
@@ -24,23 +25,23 @@ Map<String, Object> articleRow = (Map<String, Object>) request.getAttribute("art
 
 	<div>
 		번호 :
-		<%=articleRow.get("id")%>
+		<%=article.getId()%>
 	</div>
 	<div>
 		날짜 :
-		<%=articleRow.get("regDate")%>
+		<%=article.getRegDate()%>
 	</div>
 	<div>
 		작성자 :
-		<%=articleRow.get("name")%>
+		<%=article.getName()%>
 	</div>
 	<div>
 		제목 :
-		<%=articleRow.get("title")%>
+		<%=article.getTitle()%>
 	</div>
 	<div>
 		내용 :
-		<%=articleRow.get("body")%>
+		<%=article.getBody()%>
 	</div>
 	
 

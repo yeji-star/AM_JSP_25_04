@@ -1,11 +1,12 @@
 <%@page import="java.util.List"%>
 <%@page import="java.util.Map"%>
+<%@page import="com.KoreaIT.java.AM_jsp.dto.Article"%>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 
 <%
-List<Map<String, Object>> articleRows = (List<Map<String, Object>>) request.getAttribute("articleRows");
+List<Article> articles = (List<Article>) request.getAttribute("articles");
 
 // 뒤에 있는 게 List 형식이 아니면 어떡하냐고 물어보니까 앞에 List 형변환을 함
 boolean isLogined = (boolean) request.getAttribute("isLogined");
@@ -32,7 +33,7 @@ table>thead>tr>th, table>tbody>tr>td {
 
 	<h2>게시글 목록</h2>
 
-	<%@ include file="../part/top_bar.jspf" %>
+	<%@ include file="../part/top_bar.jspf"%>
 
 	<a href="../home/main">메인으로 이동</a>
 
@@ -57,21 +58,21 @@ table>thead>tr>th, table>tbody>tr>td {
 		</thead>
 		<tbody>
 			<%
-			for (Map<String, Object> articleRow : articleRows) { // 아티클로우즈의 사이즈를 검색한 거임
+			for (Article article : articles) { // 아티클로우즈의 사이즈를 검색한 거임
 			%>
 
 			<tr style="text-align: center;">
-				<td><%=articleRow.get("id")%>번</td>
-				<td><%=articleRow.get("regDate")%></td>
-				<td><a href="detail?id=<%=articleRow.get("id")%>"><%=articleRow.get("title")%></a></td>
-				<td><%=articleRow.get("name")%></td>
-				<td><%=articleRow.get("body")%></td>
+				<td><%=article.getId()%>번</td>
+				<td><%=article.getRegDate()%></td>
+				<td><a href="detail?id=<%=article.getId()%>"><%=article.getTitle()%></a></td>
+				<td><%=article.getName()%></td>
+				<td><%=article.getBody()%></td>
 
-				<td><a href="modify?id=<%=articleRow.get("id")%>">수정</a></td>
+				<td><a href="modify?id=<%=article.getId()%>">수정</a></td>
 
 				<td><a
 						onclick="if ( confirm('정말 삭제하시겠습니까?') == false ) { return false; }"
-						href="doDelete?id=<%=articleRow.get("id")%>">del</a></td>
+						href="doDelete?id=<%=article.getId()%>">del</a></td>
 			</tr>
 			<%
 			}

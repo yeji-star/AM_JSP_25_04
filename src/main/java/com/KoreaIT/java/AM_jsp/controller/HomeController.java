@@ -15,7 +15,7 @@ public class HomeController {
 	private HttpServletResponse response;
 	private Connection conn;
 	private HttpSession session;
-	
+
 	public HomeController(HttpServletRequest request, HttpServletResponse response, Connection conn,
 			HttpSession session) {
 		this.conn = conn;
@@ -23,7 +23,7 @@ public class HomeController {
 		this.response = response;
 		this.session = session;
 	}
-	
+
 	public void main() throws ServletException, IOException {
 		boolean isLogined = false;
 		int loginedMemberId = -1;
@@ -37,9 +37,10 @@ public class HomeController {
 
 		request.setAttribute("isLogined", isLogined);
 		request.setAttribute("loginedMemberId", loginedMemberId);
+		request.setAttribute("loginedMember", loginedMember);
 
 		request.getRequestDispatcher("/jsp/home/main.jsp").forward(request, response);
-		
+
 	}
 
 }

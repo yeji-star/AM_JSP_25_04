@@ -69,57 +69,71 @@ public class DispatcherServlet extends HttpServlet {
 			// 요청 쪼개기 //
 			String[] reqUriBits = requestUri.split("/");
 
-
 			if (reqUriBits.length < 5) {
 				response.getWriter().append(
 						String.format("<script>alert('올바른 요청이 아닙니다.'); location.replace('../home/main');</script>"));
 				return;
 			}
-			
+
 			String controllerName = reqUriBits[3];
 			String actionMethodName = reqUriBits[4];
-			
-			
-			// 어떤 컨트롤러에게 일시킬까 //
-			
-			if(controllerName.equals("home")) {
-				HomeController homeController = new HomeController(request, response, conn, session);
-				
-				if(actionMethodName.equals("main")) {
-					homeController.main();
-				}
-			}
-			
-			if(controllerName.equals("article")) {
-				ArticleController articleController = new ArticleController(request, response, conn, session);
-				
-				if(actionMethodName.equals("list")) {
-					articleController.showList();
-				}
-				if(actionMethodName.equals("detail")) {
-					articleController.showDetail();
-				}
-				if(actionMethodName.equals("write")) {
-					articleController.doWrite();
-				}
-				if(actionMethodName.equals("modify")) {
-					articleController.doModify();
-				}
-			}
-			
-			if(controllerName.equals("member")) {
-				MemberController memberController = new MemberController(request, response, conn, session);
-				
-				if(actionMethodName.equals("join")) {
-					memberController.doJoin();
-				}
-				if(actionMethodName.equals("login")) {
-					memberController.login();
-				}
-				
-			}
-			
 
+			// 어떤 컨트롤러에게 일시킬까 //
+
+			if (controllerName.equals("home")) {
+				HomeController homeController = new HomeController(request, response, conn, session);
+
+				homeController.main();
+
+			} else if (controllerName.equals("article")) {
+				ArticleController articleController = new ArticleController(request, response, conn, session);
+
+				switch (actionMethodName) {
+				case "list":
+					articleController.showList();
+					break;
+				case "detail":
+					articleController.showDetail();
+					break;
+				case "modify":
+					articleController.showModify();
+					break;
+				case "write":
+					articleController.showWrite();
+					break;
+				case "doDelete":
+					articleController.doDelete();
+					break;
+				case "doModify":
+					articleController.doModify();
+					break;
+				case "doWrite":
+					articleController.doWrite();
+					break;
+				}
+
+			} else if (controllerName.equals("member")) {
+				MemberController memberController = new MemberController(request, response, conn, session);
+
+				switch (actionMethodName) {
+				case "join":
+					memberController.showJoin();
+					break;
+				case "doJoin":
+					memberController.doJoin();
+					break;
+				case "login":
+					memberController.showLogin();
+					break;
+				case "doLogin":
+					memberController.doLogin();
+					break;
+				case "doLogout":
+					memberController.doLogout();
+					break;
+				}
+
+			}
 		} catch (SQLException e) {
 			System.out.println("에러 1 : " + e);
 		} finally {
